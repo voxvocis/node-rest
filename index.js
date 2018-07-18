@@ -16,10 +16,10 @@ const httpServer = http.createServer((req, res) => {
   unifiedServer(req, res);
 });
 
-// Start the http server
+// Start the HTTP server
 httpServer.listen(config.httpPort, () => {
   console.log(
-    "The server is listening on port:",
+    "The HTTP server is listening on port:",
     config.httpPort,
     "\nEnvironment mode:",
     config.envName
@@ -28,8 +28,8 @@ httpServer.listen(config.httpPort, () => {
 
 // Instantiating the HTTPS server
 const httpsServerOptions = {
-  key: fs.readFileSync("./https/key.pem"),
-  cert: fs.readFileSync("./https/cert.pem")
+  key: fs.readFileSync(config.httpsKey),
+  cert: fs.readFileSync(config.httpsCert)
 };
 
 const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
@@ -38,7 +38,7 @@ const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
 
 httpsServer.listen(config.httpsPort, () => {
   console.log(
-    "The server is listening on port:",
+    "The HTTPS server is listening on port:",
     config.httpsPort,
     "\nEnvironment mode:",
     config.envName

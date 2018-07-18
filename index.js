@@ -79,7 +79,7 @@ const unifiedServer = (req, res) => {
 
     // Choose a handler
     const handler =
-      typeof router[trimmedPath] !== "undefined" ? router[trimmedPath] : router["notFound"];
+      typeof router[trimmedPath] !== "undefined" ? router[trimmedPath] : handlers.notFound;
 
     // Construct the data object to send to the handler
     const data = {
@@ -91,7 +91,7 @@ const unifiedServer = (req, res) => {
     };
 
     // Route the request to the chosen handler
-    handler(data, (statusCode = 200, payload = {}) => {
+    handler(data, (statusCode = 200, payload = undefined) => {
       // convert the payload string
       const payloadString = JSON.stringify(payload);
 
@@ -110,9 +110,9 @@ const unifiedServer = (req, res) => {
 const handlers = {};
 
 // Sample handler
-handlers.sample = (data, callback) => {
+handlers.ping = (data, callback) => {
   // Callback a HTTP status and a payload object
-  callback(200, { name: "sample handler" });
+  callback(200);
 };
 
 // Not found handler
@@ -122,6 +122,5 @@ handlers.notFound = (data, callback) => {
 
 // Request router
 const router = {
-  sample: handlers.sample,
-  notFound: handlers.notFound
+  ping: handlers.ping
 };

@@ -8,20 +8,20 @@ const environments = {};
 
 // Staging (default) environment
 environments.staging = {
-  port: 3000,
+  httpPort: 3000,
+  httpsPort: 3001,
   envName: "Staging"
 };
 
 // Production environment
 environments.production = {
-  port: 5000,
+  httpPort: 5000,
+  httpsPort: 5001,
   envName: "Production"
 };
 
 const currentEnvironment =
-  typeof process.env.NODE_ENV == "string"
-    ? process.env.NODE_ENV.toLowerCase()
-    : "";
+  typeof process.env.NODE_ENV == "string" ? process.env.NODE_ENV.toLowerCase() : "";
 
 const environmentToExport =
   typeof environments[currentEnvironment] == "object"

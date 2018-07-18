@@ -4,12 +4,51 @@
 
 // Dependencies
 const http = require("http");
+const https = require("https");
 const url = require("url");
+const fs = require("fs");
 const StringDecoder = require("string_decoder").StringDecoder;
+
 const config = require("./config");
 
-// The server should respond to all request with a string
-const server = http.createServer((req, res) => {
+// Instantiating the HTTP server
+const httpServer = http.createServer((req, res) => {
+  unifiedServer(req, res);
+});
+
+// Start the http server
+httpServer.listen(config.httpPort, () => {
+  console.log(
+    "The server is listening on port:",
+    config.httpPort,
+    "\nEnvironment mode:",
+    config.envName
+  );
+});
+
+// Instantiating the HTTPS server
+const httpsServerOptions = {
+  key: fs.readFileSync("./https/key.pem"),
+  cert: fs.readFileSync("./https/cert.pem")
+};
+
+const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
+  unifiedServer(req, res);
+});
+
+httpsServer.listen(config.httpsPort, () => {
+  console.log(
+    "The server is listening on port:",
+    config.httpsPort,
+    "\nEnvironment mode:",
+    config.envName
+  );
+});
+
+// Start the http server
+
+// All the server logic for both the http and https server
+const unifiedServer = (req, res) => {
   // Get the URL and parse it
   const parsedUrlObject = url.parse(req.url, true);
 
@@ -40,9 +79,7 @@ const server = http.createServer((req, res) => {
 
     // Choose a handler
     const handler =
-      typeof router[trimmedPath] !== "undefined"
-        ? router[trimmedPath]
-        : router["notFound"];
+      typeof router[trimmedPath] !== "undefined" ? router[trimmedPath] : router["notFound"];
 
     // Construct the data object to send to the handler
     const data = {
@@ -64,25 +101,10 @@ const server = http.createServer((req, res) => {
       res.end(payloadString);
 
       // Log the requst path
-      console.log(
-        "Returnning this response:",
-        statusCode,
-        " & ",
-        payloadString
-      );
+      console.log("Returnning this response:", statusCode, " & ", payloadString);
     });
   });
-});
-
-// Start the server, and listen on port 3000
-server.listen(config.port, () => {
-  console.log(
-    "The server is listening on port:",
-    config.port,
-    "\nEnvironment mode:",
-    config.envName
-  );
-});
+};
 
 // Request handlers
 const handlers = {};
@@ -90,7 +112,7 @@ const handlers = {};
 // Sample handler
 handlers.sample = (data, callback) => {
   // Callback a HTTP status and a payload object
-  callback(406, { name: "sample handler" });
+  callback(200, { name: "sample handler" });
 };
 
 // Not found handler
